@@ -50,6 +50,8 @@ public class JwtFilter extends OncePerRequestFilter {
                             );
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    request.setAttribute("user", user);
                 }
 
             } catch (Exception e) {
