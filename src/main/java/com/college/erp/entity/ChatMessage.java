@@ -31,4 +31,9 @@ public class ChatMessage {
     private String message;
 
     private LocalDateTime timestamp;
+
+    @Column(nullable = false)
+    private Boolean seen = false;
+
+    private LocalDateTime seenAt;
 }

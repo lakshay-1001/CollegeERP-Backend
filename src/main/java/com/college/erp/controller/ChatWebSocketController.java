@@ -1,6 +1,7 @@
 package com.college.erp.controller;
 
 import com.college.erp.dto.ChatMessageDTO;
+import com.college.erp.dto.TypingDTO;
 import com.college.erp.entity.ChatMessage;
 import com.college.erp.entity.User;
 import com.college.erp.repository.UserRepository;
@@ -20,7 +21,7 @@ public class ChatWebSocketController {
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/chat") // /app/chat
+    @MessageMapping("/chat")
     public void sendMessage(
             @Payload ChatMessageDTO dto,
             @Header("Authorization") String token
@@ -36,11 +37,40 @@ public class ChatWebSocketController {
                 dto.getMessage()
         );
 
-        // 🔥 send to receiver
+        // ✅ Send message
         messagingTemplate.convertAndSendToUser(
                 dto.getReceiverId().toString(),
                 "/queue/messages",
                 saved
+        );
+
+        // 🔥 SEND UPDATED UNREAD COUNT
+        Long unreadCount = chatService.getUnreadCount(dto.getReceiverId());
+
+        messagingTemplate.convertAndSendToUser(
+                dto.getReceiverId().toString(),
+                "/queue/unread",
+                unreadCount
+        );
+    }
+
+    @MessageMapping("/typing")
+    public void typing(
+            @Payload TypingDTO dto,
+            @Header("Authorization") String token
+    ) {
+        String email = jwtUtil.extractUsername(token.substring(7));
+
+        User sender = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        messagingTemplate.convertAndSendToUser(
+                dto.getReceiverId().toString(),
+                "/queue/typing",
+                TypingDTO.builder()
+                        .userId(sender.getId())
+                        .typing(dto.isTyping())
+                        .build()
         );
     }
 }

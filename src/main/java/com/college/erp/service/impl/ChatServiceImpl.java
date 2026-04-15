@@ -61,4 +61,25 @@ public class ChatServiceImpl implements ChatService {
 
         return messages;
     }
+
+    @Override
+    public Long getUnreadCount(Long userId) {
+        return chatRepository.countByReceiverIdAndSeenFalse(userId);
+    }
+
+    @Override
+    public void markAsRead(Long senderId, Long receiverId) {
+
+        List<ChatMessage> messages =
+                chatRepository.findBySenderIdAndReceiverId(senderId, receiverId);
+
+        for (ChatMessage msg : messages) {
+            if (!msg.getSeen()) {
+                msg.setSeen(true);
+                msg.setSeenAt(LocalDateTime.now());
+            }
+        }
+
+        chatRepository.saveAll(messages);
+    }
 }
