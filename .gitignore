@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Frontend local overrides ###
+frontend/.env.local
+frontend/dist/
+frontend/node_modules/

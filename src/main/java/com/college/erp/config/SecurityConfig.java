@@ -24,6 +24,8 @@ public class SecurityConfig {
                 // ❌ Disable CSRF (for APIs)
                 .csrf(csrf -> csrf.disable())
 
+                .cors(Customizer.withDefaults())
+
                 // ✅ No session (JWT based)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -39,7 +41,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
                 // Optional: disable default login page
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(httpBasic -> httpBasic.disable());
 
         return http.build();
     }

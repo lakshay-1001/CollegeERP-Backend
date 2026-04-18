@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl, readJson } from "../api/client";
 
 type Props = {
   open: boolean;
@@ -39,15 +40,24 @@ export default function LoginModal({ open, onClose }: Props) {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(apiUrl("/auth/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const data = (await readJson(res)) as {
+        token?: string;
+        role?: unknown;
+        message?: string;
+      };
       if (!res.ok) {
         alert(data.message || "Invalid credentials");
+        return;
+      }
+
+      if (!data.token) {
+        alert("Login succeeded but no token was returned");
         return;
       }
 

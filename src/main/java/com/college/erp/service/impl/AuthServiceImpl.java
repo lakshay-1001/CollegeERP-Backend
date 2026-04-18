@@ -13,8 +13,10 @@ import com.college.erp.repository.UserRepository;
 import com.college.erp.security.JwtUtil;
 import com.college.erp.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -33,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
 
         // Check if user already exists
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("User already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
         }
 
         User user = User.builder()
@@ -62,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
 
             teacherRepository.findByUserId(savedUser.getId())
                     .ifPresent(t -> {
-                        throw new RuntimeException("Teacher already exists");
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "Teacher already exists");
                     });
 
             Teacher teacher = Teacher.builder()
@@ -82,10 +84,10 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(AuthRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
 
         // ✅ Allow login even if PENDING

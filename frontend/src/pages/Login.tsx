@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl, readJson } from "../api/client";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(apiUrl("/auth/login"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,7 +36,11 @@ export default function Login() {
         }),
       });
 
-      const data = await res.json();
+      const data = (await readJson(res)) as {
+        token?: string;
+        role?: unknown;
+        message?: string;
+      };
 
       console.log("LOGIN RESPONSE:", data);
 
@@ -44,7 +49,11 @@ export default function Login() {
         return;
       }
 
-      // ✅ Save token
+      if (!data.token) {
+        alert("Login succeeded but no token was returned");
+        return;
+      }
+
       localStorage.setItem("token", data.token);
 
       // ✅ Save role (important)
