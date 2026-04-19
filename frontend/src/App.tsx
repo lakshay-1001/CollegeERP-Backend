@@ -3,11 +3,16 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 
-import StudentDashboard from "./pages/StudentDashboard";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
+
+// ✅ Student layout system
+import StudentLayout from "./layouts/StudentLayout";
+import StudentHome from "./pages/student/StudentHome";
+import StudentChat from "./pages/student/StudentChat";
+import StudentProfile from "./pages/student/StudentProfile";
 
 export default function AppRoutes() {
   return (
@@ -17,16 +22,21 @@ export default function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
 
-      {/* PROTECTED */}
+      {/* STUDENT (NESTED) */}
       <Route
         path="/student"
         element={
           <ProtectedRoute allowedRoles={["STUDENT"]}>
-            <StudentDashboard />
+            <StudentLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<StudentHome />} />
+        <Route path="chat" element={<StudentChat />} />
+        <Route path="profile" element={<StudentProfile />} />
+      </Route>
 
+      {/* TEACHER */}
       <Route
         path="/teacher"
         element={
@@ -36,6 +46,7 @@ export default function AppRoutes() {
         }
       />
 
+      {/* ADMIN */}
       <Route
         path="/admin/dashboard"
         element={
