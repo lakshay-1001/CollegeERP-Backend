@@ -14,6 +14,12 @@ import StudentHome from "./pages/student/StudentHome";
 import StudentChat from "./pages/student/StudentChat";
 import StudentProfile from "./pages/student/StudentProfile";
 
+import TeacherLayout from "./layouts/TeacherLayout";
+import TeacherHome from "./pages/teacher/TeacherHome";
+import TeacherChat from "./pages/teacher/TeacherChat";
+import TeacherGroups from "./pages/teacher/TeacherGroups";
+import TeacherProfile from "./pages/teacher/TeacherProfile";
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -41,10 +47,15 @@ export default function AppRoutes() {
         path="/teacher"
         element={
           <ProtectedRoute allowedRoles={["TEACHER"]}>
-            <TeacherDashboard />
+            <TeacherLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<TeacherHome />} />
+        <Route path="groups" element={<TeacherGroups />} />
+        <Route path="chat" element={<TeacherChat />} />
+        <Route path="profile" element={<TeacherProfile />} />
+      </Route>
 
       {/* ADMIN */}
       <Route
