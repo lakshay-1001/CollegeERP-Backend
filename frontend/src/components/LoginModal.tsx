@@ -68,7 +68,7 @@ export default function LoginModal({ open, onClose }: Props) {
       onClose();
 
       if (role === "STUDENT") navigate("/student");
-      else if (role === "TEACHER") navigate("/teacher");
+      else if (role === "TEACHER" || role === "SUPPORT") navigate("/teacher");
       else if (role === "ADMIN") navigate("/admin/dashboard");
       else alert("Unknown role returned from server");
     } catch (err) {
